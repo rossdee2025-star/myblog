@@ -1,37 +1,61 @@
 ---
 layout: ../layouts/AboutLayout.astro
-title: "About"
+title: "关于我 About Me"
 ---
 
-AstroPaper is a minimal, accessible and SEO-friendly blog theme built with [Astro](https://astro.build/) and [Tailwind CSS](https://tailwindcss.com/).
+## 👋 你好！Hej！Hello!
 
-![Astro Paper](public/astropaper-og.jpg)
+欢迎来到我的数字树洞！这里记录着一个电仪工程师的日常折腾与快乐翻车现场。
 
-AstroPaper provides a solid foundation for blogs, or even portfolios\_ with full markdown support, built-in dark mode, and a clean layout that works out-of-the-box.
+## 🔧 职业身份
 
-The blog posts in this theme also serve as guides, docs or example articles\_ making AstroPaper a flexible starting point for your next content-driven site.
+**电仪工程师** - 白天负责让机器好好工作，晚上回家折腾让机器"不好好"工作 😅
 
-## Features
+专业搞定各种传感器、控制系统，业余时间专业把简单的事情搞复杂。
 
-AstroPaper comes with a set of useful features that make content publishing easy and effective:
+## 🎨 业余时间都在干嘛？
 
-- SEO-friendly
-- Fast performance
-- Light & dark mode
-- Highly customizable
-- Organizable blog posts
-- Responsive & accessible
-- Static search with [PageFind](https://pagefind.app/)
-- Automatic social image generation
+### 🍓 树莓派 & ESP32 折腾家
+家里的树莓派和ESP32数量已经快赶上我的袜子了。每一块板子都承载着"这次一定能成功"的美好愿望，以及"为什么又烧了"的深刻反思。
 
-and so much more.
+### 🛠️ 工具抚摸党
+买工具的速度 > 用工具的速度。工具箱里每一件工具都被精心挑选、细心保养，然后...吃灰。但看着它们就是开心啊！✨
 
-## Show your support
+### 👐 手残DIY党
+虽然手残，但我有一颗不屈的心！成品可能歪歪扭扭，但那是我的独家设计！每个作品都充满了"我真的尽力了"的诚意 🙈
 
-If you like [AstroPaper](https://github.com/satnaing/astro-paper), consider giving it a star ⭐️.
+### 🪵 木工入门爱好者
+锯子、刨子、凿子，样样都有，样样不精。做出来的东西充满了"手工质感"——就是那种一看就知道是手工做的质感 😂
 
-Found a bug 🐛 or have an improvement ✨ in mind? Feel free to open an [issue](https://github.com/satnaing/astro-paper/issues), submit a [pull request](https://github.com/satnaing/astro-paper/pulls) or start a [discussion](https://github.com/satnaing/astro-paper/discussions).
+### 🖨️ 3D打印入门爱好者
+打印机24小时待命，随时准备打印各种"这个肯定有用"的小零件。家里某个角落一定能找到一堆还没拆支撑的半成品 🏗️
 
-If you find this theme helpful, you can also [sponsor me on GitHub](https://github.com/sponsors/satnaing) or [buy me a coffee](https://buymeacoffee.com/satnaing) to show your support — every penny counts.
+### 📸 摄影入门爱好者
+相机很专业，技术很业余。拍出来的照片要么糊，要么歪，但偶尔也能蒙出几张"意境派"作品 📷✨
 
-Kyay zuu! 🙏🏼
+### 🎾 网球入门爱好者
+球场上最努力的捡球员！击球准确率...嗯...有待提高。但运动的快乐与水平无关！💪
+
+### 🇸🇪 瑞典语初级使用者
+能说"Hej"和"Tack"，偶尔能听懂天气预报。梦想有一天能完整看完一集瑞典剧不看字幕 🎯
+
+## 📝 这个博客是干嘛的？
+
+记录生活、记录折腾、记录翻车现场。
+
+这里可能会有：
+- 🔌 各种电子项目的折腾记录
+- 🪚 DIY的成功与失败案例（主要是失败）
+- 📚 学习新技能的心路历程
+- 🌍 生活随笔和碎碎念
+- 🤔 各种奇奇怪怪的想法
+
+## 💬 联系我
+
+如果你也是折腾爱好者，或者想看更多翻车现场，欢迎常来逛逛！
+
+如果你有什么想法、建议，或者想分享你的翻车经历，随时欢迎交流！
+
+---
+
+> ⚠️ 友情提示：本博客所有教程仅供参考，作者不对任何因模仿导致的设备损坏、财产损失、配偶不满等后果负责 😜
