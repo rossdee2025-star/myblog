@@ -1,61 +1,61 @@
 ---
 layout: ../layouts/AboutLayout.astro
-title: "关于我 About Me"
+title: "About Me"
 ---
 
-## 👋 你好！Hej！Hello!
+## 👋 Hej! Hello!
 
-欢迎来到我的数字树洞！这里记录着一个电仪工程师的日常折腾与快乐翻车现场。
+Welcome to my digital playground! This is where an instrumentation engineer documents daily tinkering adventures and spectacular failure moments.
 
-## 🔧 职业身份
+## 🔧 Day Job
 
-**电仪工程师** - 白天负责让机器好好工作，晚上回家折腾让机器"不好好"工作 😅
+**Instrumentation & Electrical Engineer** - Keeping machines running smoothly at work, then going home to make them misbehave 😅
 
-专业搞定各种传感器、控制系统，业余时间专业把简单的事情搞复杂。
+Expert at sensors and control systems by day, professionally overcomplicating simple things by night.
 
-## 🎨 业余时间都在干嘛？
+## 🎨 How I Spend My Free Time
 
-### 🍓 树莓派 & ESP32 折腾家
-家里的树莓派和ESP32数量已经快赶上我的袜子了。每一块板子都承载着"这次一定能成功"的美好愿望，以及"为什么又烧了"的深刻反思。
+### 🍓 Raspberry Pi & ESP32 Enthusiast
+My collection of RPis and ESP32s is approaching the number of socks I own. Each board carries the hope of "this time it'll definitely work" and the wisdom of "why did it burn out again?"
 
-### 🛠️ 工具抚摸党
-买工具的速度 > 用工具的速度。工具箱里每一件工具都被精心挑选、细心保养，然后...吃灰。但看着它们就是开心啊！✨
+### 🛠️ Tool Collector
+Buying tools > Using tools. Every tool in my collection is carefully selected, meticulously maintained, and then... gathers dust. But just looking at them makes me happy! ✨
 
-### 👐 手残DIY党
-虽然手残，但我有一颗不屈的心！成品可能歪歪扭扭，但那是我的独家设计！每个作品都充满了"我真的尽力了"的诚意 🙈
+### 👐 Clumsy DIY Enthusiast
+My hands may not be skilled, but my heart is determined! The results might be wonky, but that's my signature design! Every piece is filled with "I really tried my best" energy 🙈
 
-### 🪵 木工入门爱好者
-锯子、刨子、凿子，样样都有，样样不精。做出来的东西充满了"手工质感"——就是那种一看就知道是手工做的质感 😂
+### 🪵 Woodworking Beginner
+Saws, planes, chisels - got them all, mastered none. My creations have that authentic "handcrafted feel" - you know, the kind where you can tell it's handmade at first glance 😂
 
-### 🖨️ 3D打印入门爱好者
-打印机24小时待命，随时准备打印各种"这个肯定有用"的小零件。家里某个角落一定能找到一堆还没拆支撑的半成品 🏗️
+### 🖨️ 3D Printing Novice
+Printer on standby 24/7, ready to print all sorts of "definitely useful" little parts. There's always a pile of half-finished prints with supports still attached somewhere in the house 🏗️
 
-### 📸 摄影入门爱好者
-相机很专业，技术很业余。拍出来的照片要么糊，要么歪，但偶尔也能蒙出几张"意境派"作品 📷✨
+### 📸 Amateur Photographer
+Professional camera, amateur skills. Photos come out either blurry or crooked, but occasionally I luck into a few "artistic" shots 📷✨
 
-### 🎾 网球入门爱好者
-球场上最努力的捡球员！击球准确率...嗯...有待提高。但运动的快乐与水平无关！💪
+### 🎾 Tennis Beginner
+The most enthusiastic ball-chaser on the court! Shot accuracy... well... room for improvement. But the joy of exercise has nothing to do with skill level! 💪
 
-### 🇸🇪 瑞典语初级使用者
-能说"Hej"和"Tack"，偶尔能听懂天气预报。梦想有一天能完整看完一集瑞典剧不看字幕 🎯
+### 🇸🇪 Basic Swedish Speaker
+Can say "Hej" and "Tack", occasionally understand the weather forecast. Dream of watching an entire Swedish series without subtitles one day 🎯
 
-## 📝 这个博客是干嘛的？
+## 📝 What's This Blog About?
 
-记录生活、记录折腾、记录翻车现场。
+Recording life, recording tinkering, recording epic fails.
 
-这里可能会有：
-- 🔌 各种电子项目的折腾记录
-- 🪚 DIY的成功与失败案例（主要是失败）
-- 📚 学习新技能的心路历程
-- 🌍 生活随笔和碎碎念
-- 🤔 各种奇奇怪怪的想法
+You might find:
+- 🔌 Electronics project adventures
+- 🪚 DIY success and failure stories (mostly failures)
+- 📚 Learning new skills journey
+- 🌍 Life musings and random thoughts
+- 🤔 All sorts of quirky ideas
 
-## 💬 联系我
+## 💬 Get in Touch
 
-如果你也是折腾爱好者，或者想看更多翻车现场，欢迎常来逛逛！
+If you're also a tinkering enthusiast or want to see more spectacular failures, feel free to visit often!
 
-如果你有什么想法、建议，或者想分享你的翻车经历，随时欢迎交流！
+If you have ideas, suggestions, or want to share your own project mishaps, always happy to chat!
 
 ---
 
-> ⚠️ 友情提示：本博客所有教程仅供参考，作者不对任何因模仿导致的设备损坏、财产损失、配偶不满等后果负责 😜
+> ⚠️ Disclaimer: All tutorials on this blog are for reference only. Author is not responsible for any equipment damage, financial loss, or spousal dissatisfaction resulting from imitation 😜
