@@ -61,6 +61,15 @@ const levels = [
         exampleSv: "Har du tid imorgon?",
         exampleZh: "你明天有时间吗？",
       },
+      {
+        word: "balans",
+        pronunciation: "ba-lans",
+        meaning: "平衡",
+        exampleSv: "Det är viktigt att ha balans i livet.",
+        exampleZh: "生活中保持平衡很重要。",
+        sourceArticle: "/posts/digest-2026-02-16-ai-vampire",
+        sourceTitle: "《AI吸血鬼》",
+      },
     ],
   },
   {
@@ -90,6 +99,24 @@ const levels = [
         exampleSv: "Det finns många möjligheter här.",
         exampleZh: "这里有很多可能性。",
       },
+      {
+        word: "produktivitet",
+        pronunciation: "pro-duk-ti-vi-tet",
+        meaning: "生产力",
+        exampleSv: "AI ökar vår produktivitet enormt.",
+        exampleZh: "AI极大地提升了我们的生产力。",
+        sourceArticle: "/posts/digest-2026-02-16-ai-vampire",
+        sourceTitle: "《AI吸血鬼》",
+      },
+      {
+        word: "förväntning",
+        pronunciation: "för-vänt-ning",
+        meaning: "期望",
+        exampleSv: "Förväntningarna på oss ökar hela tiden.",
+        exampleZh: "对我们的期望不断提高。",
+        sourceArticle: "/posts/digest-2026-02-16-ai-vampire",
+        sourceTitle: "《AI吸血鬼》",
+      },
     ],
   },
   {
@@ -118,6 +145,15 @@ const levels = [
         meaning: "背景/联系",
         exampleSv: "Det är viktigt att förstå sammanhanget.",
         exampleZh: "理解背景/联系非常重要。",
+      },
+      {
+        word: "välmående",
+        pronunciation: "väl-må-en-de",
+        meaning: "健康/幸福感",
+        exampleSv: "Välmående på jobbet är viktigt.",
+        exampleZh: "工作中的幸福感很重要。",
+        sourceArticle: "/posts/digest-2026-02-16-ai-vampire",
+        sourceTitle: "《AI吸血鬼》",
       },
     ],
   },
@@ -149,8 +185,9 @@ const levels = [
           </h2>
 
           <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {words.map(({ word, pronunciation, meaning, exampleSv, exampleZh }) => (
+            {words.map(({ word, pronunciation, meaning, exampleSv, exampleZh, sourceArticle, sourceTitle }) => (
               <div
+                id={word}
                 class="rounded-xl p-5 flex flex-col gap-2 transition-transform hover:-translate-y-1"
                 style={`background-color: ${bgColor}; border: 1px solid ${borderColor}`}
               >
@@ -169,6 +206,14 @@ const levels = [
                   <p class="italic">{exampleSv}</p>
                   <p class="opacity-60">{exampleZh}</p>
                 </div>
+                {sourceArticle && (
+                  <a
+                    href={sourceArticle}
+                    class="mt-2 text-xs opacity-60 hover:opacity-100 underline"
+                  >
+                    来源文章：{sourceTitle}
+                  </a>
+                )}
               </div>
             ))}
           </div>
