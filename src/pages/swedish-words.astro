@@ -1,0 +1,180 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import Header from "@/components/Header.astro";
+import Footer from "@/components/Footer.astro";
+import { SITE } from "@/config";
+
+const levels = [
+  {
+    level: "A1",
+    color: "#4ade80",
+    bgColor: "rgba(74, 222, 128, 0.1)",
+    borderColor: "rgba(74, 222, 128, 0.4)",
+    words: [
+      {
+        word: "hej",
+        pronunciation: "hey",
+        meaning: "你好",
+        exampleSv: "Hej! Hur mår du?",
+        exampleZh: "你好！你好吗？",
+      },
+      {
+        word: "tack",
+        pronunciation: "tack",
+        meaning: "谢谢",
+        exampleSv: "Tack så mycket!",
+        exampleZh: "非常感谢！",
+      },
+      {
+        word: "ja",
+        pronunciation: "yah",
+        meaning: "是的",
+        exampleSv: "Ja, det stämmer.",
+        exampleZh: "是的，没错。",
+      },
+    ],
+  },
+  {
+    level: "A2",
+    color: "#60a5fa",
+    bgColor: "rgba(96, 165, 250, 0.1)",
+    borderColor: "rgba(96, 165, 250, 0.4)",
+    words: [
+      {
+        word: "arbete",
+        pronunciation: "ar-be-te",
+        meaning: "工作",
+        exampleSv: "Jag har ett bra arbete.",
+        exampleZh: "我有一份好工作。",
+      },
+      {
+        word: "familj",
+        pronunciation: "fa-milj",
+        meaning: "家庭",
+        exampleSv: "Min familj bor i Stockholm.",
+        exampleZh: "我的家人住在斯德哥尔摩。",
+      },
+      {
+        word: "tid",
+        pronunciation: "teed",
+        meaning: "时间",
+        exampleSv: "Har du tid imorgon?",
+        exampleZh: "你明天有时间吗？",
+      },
+    ],
+  },
+  {
+    level: "B1",
+    color: "#fb923c",
+    bgColor: "rgba(251, 146, 60, 0.1)",
+    borderColor: "rgba(251, 146, 60, 0.4)",
+    words: [
+      {
+        word: "utveckling",
+        pronunciation: "ut-veck-ling",
+        meaning: "发展",
+        exampleSv: "Teknisk utveckling förändrar världen.",
+        exampleZh: "技术发展改变着世界。",
+      },
+      {
+        word: "samhälle",
+        pronunciation: "sam-hel-e",
+        meaning: "社会",
+        exampleSv: "Vi lever i ett demokratiskt samhälle.",
+        exampleZh: "我们生活在一个民主社会中。",
+      },
+      {
+        word: "möjlighet",
+        pronunciation: "moy-lig-het",
+        meaning: "可能性",
+        exampleSv: "Det finns många möjligheter här.",
+        exampleZh: "这里有很多可能性。",
+      },
+    ],
+  },
+  {
+    level: "B2",
+    color: "#c084fc",
+    bgColor: "rgba(192, 132, 252, 0.1)",
+    borderColor: "rgba(192, 132, 252, 0.4)",
+    words: [
+      {
+        word: "konsekvens",
+        pronunciation: "kon-se-kvens",
+        meaning: "后果",
+        exampleSv: "Beslutet fick allvarliga konsekvenser.",
+        exampleZh: "这个决定产生了严重后果。",
+      },
+      {
+        word: "rättighet",
+        pronunciation: "ret-ig-het",
+        meaning: "权利",
+        exampleSv: "Alla har rätt till grundläggande rättigheter.",
+        exampleZh: "每个人都有基本权利。",
+      },
+      {
+        word: "sammanhang",
+        pronunciation: "sam-an-hang",
+        meaning: "背景/联系",
+        exampleSv: "Det är viktigt att förstå sammanhanget.",
+        exampleZh: "理解背景/联系非常重要。",
+      },
+    ],
+  },
+];
+---
+
+<Layout title={`Swedish Word Cards | ${SITE.title}`}>
+  <Header />
+  <main id="main-content" class="app-layout">
+    <section class="prose prose-lg mx-auto max-w-4xl px-4 py-10">
+      <h1 class="text-3xl font-bold mb-2">🇸🇪 Swedish Word Cards</h1>
+      <p class="text-skin-base/70 mb-8">
+        Vocabulary organized by CEFR level — from beginner (A1) to upper-intermediate (B2).
+      </p>
+
+      {levels.map(({ level, color, bgColor, borderColor, words }) => (
+        <div class="mb-10">
+          <h2
+            class="text-2xl font-bold mb-4 flex items-center gap-2"
+            style={`color: ${color}`}
+          >
+            <span
+              class="inline-block px-3 py-1 rounded-full text-sm font-bold text-white"
+              style={`background-color: ${color}`}
+            >
+              {level}
+            </span>
+            Level {level}
+          </h2>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {words.map(({ word, pronunciation, meaning, exampleSv, exampleZh }) => (
+              <div
+                class="rounded-xl p-5 flex flex-col gap-2 transition-transform hover:-translate-y-1"
+                style={`background-color: ${bgColor}; border: 1px solid ${borderColor}`}
+              >
+                <div class="flex items-start justify-between">
+                  <span class="text-2xl font-bold">{word}</span>
+                  <span
+                    class="text-xs font-bold px-2 py-0.5 rounded-full text-white"
+                    style={`background-color: ${color}`}
+                  >
+                    {level}
+                  </span>
+                </div>
+                <p class="text-sm italic opacity-70">/{pronunciation}/</p>
+                <p class="text-xl font-medium">{meaning}</p>
+                <div class="mt-2 pt-2 border-t border-current border-opacity-20 text-sm">
+                  <p class="italic">{exampleSv}</p>
+                  <p class="opacity-60">{exampleZh}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      ))}
+    </section>
+  </main>
+  <Footer />
+</Layout>
