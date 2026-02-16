@@ -1,24 +1,32 @@
 ---
 layout: "src/layouts/PostDetails.astro"
-title: "Sample Default Post"
-description: "Example content based on AstroPaper's default sample layout."
-author: "AstroPaper"
-tags: ["Example", "AstroPaper", "Test"]
-pubDatetime: 2025-01-01T00:00:00Z
-canonicalURL: "https://astro-paper.example.com/posts/sample-default-post"
+title: "How to Add LaTeX Equations in Blog Posts"
+description: "A demonstration of using LaTeX equations in Blog posts for AstroPaper."
+author: "AstroPaper Contributor"
+tags: ["LaTeX", "Markdown", "Blog"]
+pubDatetime: 2026-02-16T07:00:00Z
+canonicalURL: "https://astro-paper.pages.dev/posts/how-to-add-latex-equations-in-blog-posts/"
 hideEditPost: false
 ---
 
-## Welcome to AstroPaper!
+This blog post demonstrates how to use LaTeX equations in your Markdown files for AstroPaper. LaTeX is a powerful typesetting system often used for mathematical and scientific documents.
 
-This is a sample post using the default layout of AstroPaper. The content here follows the repository's structure and best practices.
+## Instructions
 
-### Key Features
+### Install Plugins
 
-- **SEO-friendly**: Built with proper metadata and performance in mind.
-- **Accessible**: Crafted with accessibility support for all users.
-- **Stylish Design**: Minimal theme configurable to your preference.
+Install necessary plugins via pnpm:
+```
+pnpm install remark-math rehype-katex katex
+```
 
----
+### Inline Equations
 
-Feel free to customize or replace this content with your article. This serves as a placeholder to ensure template compatibility.
+You can write inline equations such as $E = mc^2$ and $E = \frac{-b \pm \sqrt{b^2-4ac}}{2a}$. 
+
+### Block Equations
+For larger models:
+```
+$$1+e ^x$$«La formule finalise»
+
+ψ Pi etc continue«Full validations»...
