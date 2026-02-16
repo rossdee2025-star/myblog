@@ -1,5 +1,5 @@
 ---
-layout: "@/layouts/PostDetails.astro"
+layout: "src/layouts/PostDetails.astro"
 title: "瑞典语学习笔记 #1"
 author: "Ross Dee"
 date: 2026-02-16
