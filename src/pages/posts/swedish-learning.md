@@ -1,4 +1,5 @@
 ---
+layout: "@/layouts/PostDetails.astro"
 title: "瑞典语学习笔记 #1"
 date: 2026-02-16
 tags: ["瑞典语", "语言学习", "测试"]
