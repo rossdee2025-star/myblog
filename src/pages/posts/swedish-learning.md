@@ -1,13 +1,13 @@
 ---
 layout: "src/layouts/PostDetails.astro"
 title: "瑞典语学习笔记 #1"
-author: "Ross Dee"
-date: 2026-02-16
-tags: ["瑞典语", "语言学习", "测试"]
 description: "从最近的中瑞双语 RSS 同步的一篇博文，包含测试标签。"
+author: "Ross Dee"
+tags: ["瑞典语", "语言学习", "测试"]
 pubDatetime: 2026-02-16T08:00:00Z
-canonicalURL: ""
+canonicalURL: "https://myblog.example/swedish-learning"
 hideEditPost: false
+ogImage: "/assets/og-image-default.jpg"
 ---
 
 ## 你好，世界！
