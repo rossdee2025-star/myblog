@@ -7,7 +7,6 @@ tags: ["瑞典语", "语言学习", "测试"]
 pubDatetime: 2026-02-16T08:00:00Z
 canonicalURL: "https://myblog.example/swedish-learning"
 hideEditPost: false
-ogImage: "/assets/og-image-default.jpg"
 ---
 
 ## 你好，世界！
