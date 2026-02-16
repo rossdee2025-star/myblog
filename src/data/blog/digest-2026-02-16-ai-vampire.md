@@ -41,11 +41,13 @@ Yegge 将这种现象比作吸血鬼传说：无论你如何选择，都会失�
 
 ---
 
-## 📚 本文词汇 | Vocabulary from this article
+## 📚 本文词汇 | Vocabulary
 
-| 单词 | 读音 | 中文 | 级别 | 例句 |
-|------|------|------|------|------|
-| [produktivitet](/swedish-words#produktivitet) | pro-duk-ti-vi-tet | 生产力 | B1 | AI ökar vår produktivitet enormt. |
-| [förväntning](/swedish-words#förväntning) | för-vänt-ning | 期望 | B1 | Förväntningarna på oss ökar hela tiden. |
-| [balans](/swedish-words#balans) | ba-lans | 平衡 | A2 | Det är viktigt att ha balans i livet. |
-| [välmående](/swedish-words#välmående) | väl-må-en-de | 健康/幸福感 | B2 | Välmående på jobbet är viktigt. |
+<div style="border-left:4px solid #fb923c;padding:8px 12px;margin:8px 0;background:rgba(0,0,0,0.03);border-radius:4px"><strong style="color:#fb923c"><a href="/swedish-words#produktivitet">produktivitet</a></strong> <span style="background:#fb923c;color:#fff;font-size:11px;padding:1px 6px;border-radius:10px;margin-left:4px">B1</span> &nbsp;/pro-duk-ti-vi-tet/ <audio src="/audio/sv_produktivitet.mp3" controls style="height:22px;vertical-align:middle;margin-left:6px"></audio><br><span style="font-size:15px">生产力</span><br><em style="font-size:13px;opacity:0.8">AI ökar vår produktivitet enormt.</em><br><span style="font-size:12px;opacity:0.6">AI极大地提升了我们的生产力。</span></div>
+<div style="border-left:4px solid #fb923c;padding:8px 12px;margin:8px 0;background:rgba(0,0,0,0.03);border-radius:4px"><strong style="color:#fb923c"><a href="/swedish-words#förväntning">förväntning</a></strong> <span style="background:#fb923c;color:#fff;font-size:11px;padding:1px 6px;border-radius:10px;margin-left:4px">B1</span> &nbsp;/för-vänt-ning/ <audio src="/audio/sv_förväntning.mp3" controls style="height:22px;vertical-align:middle;margin-left:6px"></audio><br><span style="font-size:15px">期望</span><br><em style="font-size:13px;opacity:0.8">Förväntningarna på oss ökar hela tiden.</em><br><span style="font-size:12px;opacity:0.6">对我们的期望不断提高。</span></div>
+<div style="border-left:4px solid #60a5fa;padding:8px 12px;margin:8px 0;background:rgba(0,0,0,0.03);border-radius:4px"><strong style="color:#60a5fa"><a href="/swedish-words#balans">balans</a></strong> <span style="background:#60a5fa;color:#fff;font-size:11px;padding:1px 6px;border-radius:10px;margin-left:4px">A2</span> &nbsp;/ba-lans/ <audio src="/audio/sv_balans.mp3" controls style="height:22px;vertical-align:middle;margin-left:6px"></audio><br><span style="font-size:15px">平衡</span><br><em style="font-size:13px;opacity:0.8">Det är viktigt att ha balans i livet.</em><br><span style="font-size:12px;opacity:0.6">生活中保持平衡很重要。</span></div>
+<div style="border-left:4px solid #c084fc;padding:8px 12px;margin:8px 0;background:rgba(0,0,0,0.03);border-radius:4px"><strong style="color:#c084fc"><a href="/swedish-words#välmående">välmående</a></strong> <span style="background:#c084fc;color:#fff;font-size:11px;padding:1px 6px;border-radius:10px;margin-left:4px">B2</span> &nbsp;/väl-må-en-de/ <audio src="/audio/sv_välmående.mp3" controls style="height:22px;vertical-align:middle;margin-left:6px"></audio><br><span style="font-size:15px">健康/幸福感</span><br><em style="font-size:13px;opacity:0.8">Välmående på jobbet är viktigt.</em><br><span style="font-size:12px;opacity:0.6">工作中的幸福感很重要。</span></div>
+
+---
+
+*📖 [查看完整词汇卡片](/swedish-words) | 🔄 每日技术日报自动更新*
