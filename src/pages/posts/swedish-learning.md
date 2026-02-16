@@ -1,25 +1,24 @@
 ---
 layout: "src/layouts/PostDetails.astro"
-title: "瑞典语学习笔记 #1"
-description: "从最近的中瑞双语 RSS 同步的一篇博文，包含测试标签。"
-author: "Ross Dee"
-tags: ["瑞典语", "语言学习", "测试"]
-pubDatetime: 2026-02-16T08:00:00Z
-canonicalURL: "https://myblog.example/swedish-learning"
+title: "Sample Default Post"
+description: "Example content based on AstroPaper's default sample layout."
+author: "AstroPaper"
+tags: ["Example", "AstroPaper", "Test"]
+pubDatetime: 2025-01-01T00:00:00Z
+canonicalURL: "https://astro-paper.example.com/posts/sample-default-post"
 hideEditPost: false
 ---
 
-## 你好，世界！
+## Welcome to AstroPaper!
 
-**瑞典语**：Hej världen!  
-**中文**：你好，世界！
+This is a sample post using the default layout of AstroPaper. The content here follows the repository's structure and best practices.
 
-### 示例用句
+### Key Features
 
-- 瑞典语：Jag älskar att lära mig språk.  
-- 中文：我喜欢学习语言。
+- **SEO-friendly**: Built with proper metadata and performance in mind.
+- **Accessible**: Crafted with accessibility support for all users.
+- **Stylish Design**: Minimal theme configurable to your preference.
 
---- 
+---
 
-### 本文重点
-通过标签 ["瑞典语", "语言学习"] 标记，测试动态分类与布局功能。
+Feel free to customize or replace this content with your article. This serves as a placeholder to ensure template compatibility.
