@@ -4,7 +4,7 @@ import Header from "@/components/Header.astro";
 import Footer from "@/components/Footer.astro";
 import { SITE } from "@/config";
 
-const levels = [
+const levels: any[] = [
   {
     level: "A1",
     color: "#4ade80",
@@ -235,7 +235,7 @@ const levels = [
           </h2>
 
           <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {words.map(({ word, pronunciation, meaning, exampleSv, exampleZh, sourceArticle, sourceTitle }) => (
+            {words.map(({ word, pronunciation, meaning, exampleSv, exampleZh, sourceArticle, sourceTitle, audioUrl }: any) => (
               <div
                 id={word}
                 class="rounded-xl p-5 flex flex-col gap-2 transition-transform hover:-translate-y-1"
