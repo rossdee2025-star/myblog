@@ -1,5 +1,4 @@
 ---
-layout: "src/layouts/PostDetails.astro"
 title: "How to Add LaTeX Equations in Blog Posts"
 description: "A demonstration of using LaTeX equations in Blog posts for AstroPaper."
 author: "AstroPaper Contributor"
