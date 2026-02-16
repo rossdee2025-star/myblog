@@ -13,6 +13,8 @@ const levels: any[] = [
     words: [
       {
         word: "hej",
+        wordType: "intj",
+        inflections: [],
         pronunciation: "hey",
         meaning: "你好",
         exampleSv: "Hej! Hur mår du?",
@@ -20,6 +22,8 @@ const levels: any[] = [
       },
       {
         word: "tack",
+        wordType: "intj",
+        inflections: [],
         pronunciation: "tack",
         meaning: "谢谢",
         exampleSv: "Tack så mycket!",
@@ -27,6 +31,8 @@ const levels: any[] = [
       },
       {
         word: "ja",
+        wordType: "adv",
+        inflections: ["jo"],
         pronunciation: "yah",
         meaning: "是的",
         exampleSv: "Ja, det stämmer.",
@@ -42,6 +48,8 @@ const levels: any[] = [
     words: [
       {
         word: "arbete",
+        wordType: "noun",
+        inflections: ["arbetet", "arbeten", "arbetena"],
         pronunciation: "ar-be-te",
         meaning: "工作",
         exampleSv: "Jag har ett bra arbete.",
@@ -49,6 +57,8 @@ const levels: any[] = [
       },
       {
         word: "familj",
+        wordType: "noun",
+        inflections: ["familjen", "familjer", "familjerna"],
         pronunciation: "fa-milj",
         meaning: "家庭",
         exampleSv: "Min familj bor i Stockholm.",
@@ -56,6 +66,8 @@ const levels: any[] = [
       },
       {
         word: "tid",
+        wordType: "noun",
+        inflections: ["tiden", "tider", "tiderna"],
         pronunciation: "teed",
         meaning: "时间",
         exampleSv: "Har du tid imorgon?",
@@ -63,6 +75,8 @@ const levels: any[] = [
       },
       {
         word: "balans",
+        wordType: "noun",
+        inflections: ["balansen", "balanser", "balanserna"],
         pronunciation: "ba-lans",
         meaning: "平衡",
         exampleSv: "Det är viktigt att ha balans i livet.",
@@ -72,6 +86,8 @@ const levels: any[] = [
       },
       {
         word: "teknik",
+        wordType: "noun",
+        inflections: ["tekniken", "tekniker", "teknikerna"],
         pronunciation: "tek-nik",
         meaning: "技术",
         exampleSv: "Teknik förändrar världen.",
@@ -82,6 +98,8 @@ const levels: any[] = [
       },
       {
         word: "verktyg",
+        wordType: "noun",
+        inflections: ["verktyget", "verktyg", "verktygen"],
         pronunciation: "verk-tyg",
         meaning: "工具",
         exampleSv: "Vi använder verktyg för att arbeta.",
@@ -121,6 +139,8 @@ const levels: any[] = [
       },
       {
         word: "produktivitet",
+        wordType: "noun",
+        inflections: ["produktiviteten"],
         pronunciation: "pro-duk-ti-vi-tet",
         meaning: "生产力",
         exampleSv: "AI ökar vår produktivitet enormt.",
@@ -130,6 +150,8 @@ const levels: any[] = [
       },
       {
         word: "förväntning",
+        wordType: "noun",
+        inflections: ["förväntningen", "förväntningar", "förväntningarna"],
         pronunciation: "för-vänt-ning",
         meaning: "期望",
         exampleSv: "Förväntningarna på oss ökar hela tiden.",
@@ -139,6 +161,8 @@ const levels: any[] = [
       },
       {
         word: "kommunikation",
+        wordType: "noun",
+        inflections: ["kommunikationen"],
         pronunciation: "ko-mu-ni-ka-sjon",
         meaning: "交流/沟通",
         exampleSv: "God kommunikation är viktig.",
@@ -149,6 +173,8 @@ const levels: any[] = [
       },
       {
         word: "förändring",
+        wordType: "noun",
+        inflections: ["förändringen", "förändringar", "förändringarna"],
         pronunciation: "för-änd-ring",
         meaning: "变化",
         exampleSv: "Förändring kan vara svår men nödvändig.",
@@ -188,6 +214,8 @@ const levels: any[] = [
       },
       {
         word: "välmående",
+        wordType: "adj",
+        inflections: ["välmående", "välmående"],
         pronunciation: "väl-må-en-de",
         meaning: "健康/幸福感",
         exampleSv: "Välmående på jobbet är viktigt.",
@@ -197,6 +225,8 @@ const levels: any[] = [
       },
       {
         word: "effektivitet",
+        wordType: "noun",
+        inflections: ["effektiviteten"],
         pronunciation: "ef-fek-ti-vi-tet",
         meaning: "效率",
         exampleSv: "Effektivitet är nyckeln till framgång.",
@@ -235,12 +265,13 @@ const levels: any[] = [
           </h2>
 
           <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {words.map(({ word, pronunciation, meaning, exampleSv, exampleZh, sourceArticle, sourceTitle, audioUrl }: any) => (
+            {words.map(({ word, pronunciation, meaning, exampleSv, exampleZh, sourceArticle, sourceTitle, audioUrl, inflections, wordType }: any) => (
               <div
                 id={word}
                 class="rounded-xl p-5 flex flex-col gap-2 transition-transform hover:-translate-y-1"
                 style={`background-color: ${bgColor}; border: 1px solid ${borderColor}`}
               >
+                {/* Word + level badge */}
                 <div class="flex items-start justify-between">
                   <span class="text-2xl font-bold text-foreground">{word}</span>
                   <span
@@ -250,17 +281,35 @@ const levels: any[] = [
                     {level}
                   </span>
                 </div>
-                <div class="flex items-center gap-2">
+
+                {/* Pronunciation + audio */}
+                <div class="flex items-center gap-2 flex-wrap">
                   <p class="text-sm italic text-foreground/70">/{pronunciation}/</p>
                   {audioUrl && (
                     <audio src={audioUrl} controls style="height:22px;vertical-align:middle"></audio>
                   )}
                 </div>
+
+                {/* Inflections */}
+                {inflections && inflections.length > 0 && (
+                  <div class="text-xs text-foreground/50 font-mono flex flex-wrap gap-1">
+                    <span class="text-foreground/30 mr-1">{wordType === "verb" ? "▸" : wordType === "adj" ? "◈" : "◆"}</span>
+                    {inflections.map((f: string) => (
+                      <span class="bg-foreground/5 px-1.5 py-0.5 rounded">{f}</span>
+                    ))}
+                  </div>
+                )}
+
+                {/* Meaning */}
                 <p class="text-xl font-medium text-foreground">{meaning}</p>
+
+                {/* Example */}
                 <div class="mt-2 pt-2 border-t border-foreground/20 text-sm text-foreground">
                   <p class="italic">{exampleSv}</p>
                   <p class="text-foreground/60">{exampleZh}</p>
                 </div>
+
+                {/* Source article link */}
                 {sourceArticle && (
                   <a
                     href={sourceArticle}
