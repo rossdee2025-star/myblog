@@ -1,4 +1,5 @@
 name = "myblog"
+account_id = "5b5250ebeae6ea5312da7903ec575b7f"
 compatibility_date = "2026-02-17"
 
 [assets]
