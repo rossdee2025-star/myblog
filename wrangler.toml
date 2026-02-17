@@ -2,5 +2,9 @@ name = "myblog"
 account_id = "5b5250ebeae6ea5312da7903ec575b7f"
 compatibility_date = "2026-02-17"
 
+routes = [
+  { pattern = "blog.rdi.plus/*", zone_name = "rdi.plus" }
+]
+
 [assets]
 directory = "./dist"
