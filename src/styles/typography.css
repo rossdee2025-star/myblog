@@ -91,6 +91,27 @@
     }
   }
 
+  /* ===== Dark mode: override Tailwind Typography CSS variables ===== */
+  html[data-theme="dark"] .app-prose {
+    --tw-prose-body: var(--foreground);
+    --tw-prose-headings: var(--foreground);
+    --tw-prose-lead: var(--foreground);
+    --tw-prose-links: var(--foreground);
+    --tw-prose-bold: var(--foreground);
+    --tw-prose-counters: var(--accent);
+    --tw-prose-bullets: var(--accent);
+    --tw-prose-hr: var(--border);
+    --tw-prose-quotes: var(--foreground);
+    --tw-prose-quote-borders: var(--accent);
+    --tw-prose-captions: var(--foreground);
+    --tw-prose-kbd: var(--foreground);
+    --tw-prose-code: var(--foreground);
+    --tw-prose-pre-code: var(--foreground);
+    --tw-prose-pre-bg: var(--muted);
+    --tw-prose-th-borders: var(--border);
+    --tw-prose-td-borders: var(--border);
+  }
+
   /* ===== Code Blocks & Syntax Highlighting ===== */
   .astro-code {
     @apply flex border bg-(--shiki-light-bg) text-(--shiki-light) outline-border [&_span]:text-(--shiki-light);
