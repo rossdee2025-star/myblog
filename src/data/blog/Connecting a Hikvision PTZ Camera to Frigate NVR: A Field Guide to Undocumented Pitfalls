@@ -1,0 +1,287 @@
+---
+title: "Connecting a Hikvision PTZ Camera to Frigate NVR: A Field Guide to Undocumented Pitfalls"
+description: "Three undocumented traps when integrating a Hikvision DS-2DE2A404IWG1-E/W PTZ camera with Frigate NVR: the separate ONVIF user database, the silent userType privilege downgrade, the account lockout mechanism, and a deep-dive on the go2rtc 1.9.14 two-way audio bug."
+author: "Ross Dee & Claude Sonnet"
+tags: ["Frigate", "Hikvision", "ONVIF", "NVR", "PTZ", "home-assistant", "surveillance", "go2rtc"]
+pubDatetime: 2026-02-22T20:00:00Z
+slug: "hikvision-ptz-frigate-onvif-pitfalls-en"
+---
+
+# Connecting a Hikvision PTZ Camera to Frigate NVR: A Field Guide to Undocumented Pitfalls
+
+**Environment:** Frigate 0.16.4 · go2rtc 1.9.14 · Hikvision DS-2DE2A404IWG1-E/W (firmware V5.9.1) · Raspberry Pi 5 arm64
+
+---
+
+## Overview
+
+Adding a Hikvision PTZ camera to Frigate should be straightforward — the camera supports ONVIF, Frigate supports ONVIF PTZ, and go2rtc can ingest ONVIF streams. In practice, three separate bugs or undocumented behaviors turned a simple configuration task into hours of debugging. This post documents every trap and how to escape it.
+
+---
+
+## The Setup Goal
+
+- Video + audio from a Hikvision DS-2DE2A404IWG1-E/W PTZ dome
+- PTZ control via Frigate's built-in joystick UI
+- Two-way audio (talk-back) via Frigate's microphone button
+- Object detection via Hailo8L accelerator
+
+---
+
+## Pitfall 1: Hikvision Has Two Completely Separate User Databases
+
+This is the root cause of almost every auth failure in this guide.
+
+Hikvision cameras maintain **two independent user databases**:
+
+| Database | API endpoint | Used by |
+|---|---|---|
+| System (ISAPI) users | `/ISAPI/Security/users` | HTTP/HTTPS access, RTSP, ISAPI calls |
+| ONVIF users | `/ISAPI/Security/ONVIF/users` | ONVIF SOAP protocol only |
+
+When you enable ONVIF on a Hikvision camera (via web UI or ISAPI), the ONVIF user database starts **completely empty**. Your `admin` system user does **not** automatically become an ONVIF user. Any ONVIF client — including go2rtc and Frigate — that tries to authenticate will receive `400 Bad Request` or `NotAuthorized` errors even if credentials are correct.
+
+### Diagnosis
+
+Check whether your camera has ONVIF users at all:
+
+```bash
+curl --digest -u "admin:YOUR_PASSWORD" \
+  "http://CAMERA_IP/ISAPI/Security/ONVIF/users" -s
+```
+
+If the response contains an empty list or no `<User>` elements, that's the problem.
+
+### Fix: Create an ONVIF user via ISAPI
+
+```bash
+curl --digest -u "admin:YOUR_PASSWORD" \
+  -X POST "http://CAMERA_IP/ISAPI/Security/ONVIF/users" \
+  -H "Content-Type: application/xml" \
+  --data-raw '<User version="2.0" xmlns="http://www.hikvision.com/ver20/XMLSchema">
+    <userName>admin</userName>
+    <password>YOUR_PASSWORD</password>
+    <userType>administrator</userType>
+  </User>'
+```
+
+**Critical:** The field name is `<userType>`, **not** `<userLevel>`. If you use the wrong field name the camera silently stores the user as `mediaUser` (read-only) — which leads directly to Pitfall 2.
+
+---
+
+## Pitfall 2: `userType` vs `userLevel` — The Silent Downgrade
+
+The ONVIF spec uses the term "user level". Hikvision's ISAPI uses `<userType>`. If you send `<userLevel>Administrator</userLevel>`, the camera accepts the request (HTTP 200) but stores the user with `userType: mediaUser` — its lowest privilege level — without any warning.
+
+The consequence is subtle: `mediaUser` can read ONVIF data (GetProfiles, GetNodes succeed) but cannot send any control commands. PTZ `ContinuousMove` returns `NotAuthorized`. This makes it look like your credentials are accepted but PTZ is broken, which is extremely confusing.
+
+### Valid `userType` values (from camera capabilities)
+
+```xml
+<userType opt="administrator,operator,mediaUser"/>
+```
+
+For PTZ control, you need `administrator` or `operator`.
+
+### Verify the stored type
+
+```bash
+curl --digest -u "admin:YOUR_PASSWORD" \
+  "http://CAMERA_IP/ISAPI/Security/ONVIF/users/1" -s
+```
+
+Expected good response:
+```xml
+<User version="2.0">
+  <id>1</id>
+  <userName>admin</userName>
+  <userType>administrator</userType>
+</User>
+```
+
+### Fix: Update the user with the correct field
+
+```bash
+curl --digest -u "admin:YOUR_PASSWORD" \
+  -X PUT "http://CAMERA_IP/ISAPI/Security/ONVIF/users/1" \
+  -H "Content-Type: application/xml" \
+  --data-raw '<User version="2.0" xmlns="http://www.hikvision.com/ver20/XMLSchema">
+    <id>1</id>
+    <userName>admin</userName>
+    <password>YOUR_PASSWORD</password>
+    <userType>administrator</userType>
+  </User>'
+```
+
+---
+
+## Pitfall 3: ONVIF Account Lockout
+
+Hikvision's DS-2DE2A404IWG1-E/W locks the ONVIF account after **7 consecutive failed authentication attempts** for **30 minutes**. This bites you hard during debugging when you're iterating on WSSE authentication or testing go2rtc configs.
+
+Signs you're locked out:
+- ONVIF calls that were working now return `NotAuthorized`
+- ISAPI calls still work fine (different auth system)
+- go2rtc log: `onvif: wrong response 400`
+
+### Reset without waiting 30 minutes
+
+Toggle ONVIF off and on via ISAPI:
+
+```bash
+# Disable ONVIF
+curl --digest -u "admin:YOUR_PASSWORD" -X PUT \
+  "http://CAMERA_IP/ISAPI/System/Network/Integrate" \
+  -H "Content-Type: application/xml" \
+  --data-raw '<Integrate><ONVIFEnable>false</ONVIFEnable></Integrate>'
+
+# Re-enable ONVIF
+curl --digest -u "admin:YOUR_PASSWORD" -X PUT \
+  "http://CAMERA_IP/ISAPI/System/Network/Integrate" \
+  -H "Content-Type: application/xml" \
+  --data-raw '<Integrate><ONVIFEnable>true</ONVIFEnable></Integrate>'
+```
+
+This clears the lockout counter immediately.
+
+---
+
+## Pitfall 4: Two-Way Audio Broken by go2rtc Multi-Codec Limitation
+
+The Hikvision camera's RTSP backchannel (the mechanism for sending audio TO the camera) announces its capabilities via SDP like this:
+
+```
+m=audio 0 RTP/AVP 0 102 104
+a=sendonly
+a=rtpmap:0 PCMU/8000/1
+a=rtpmap:102 G726/8000/1
+a=rtpmap:104 mpeg4-generic/16000/1
+```
+
+Three codecs in one `sendonly` media section. This is valid RTSP/SDP. go2rtc 1.9.14, however, cannot register a track that offers multiple codecs in a single `sendonly` section. The log entry is:
+
+```
+INF [streams] can't add track error="wrong media: audio, sendonly, PCMU/8000, G726/8000, MPEG4-GENERIC/16000"
+```
+
+The backchannel sender is partially created internally (you can see it in the stream's `senders` array with PCMU codec selected), but it is not exposed in go2rtc's `?microphone` WebRTC query.
+
+Frigate's UI checks that query to decide whether to show the microphone button:
+
+```python
+# frigate/api/app.py
+requests.get("http://127.0.0.1:1984/api/streams?src={name}&video=all&audio=all&microphone")
+```
+
+Frontend JS:
+```js
+producers.find(p => p.medias.find(m => m.includes("audio, sendonly")))
+```
+
+Since the track isn't returned, Frigate displays "此视频流不支持双向对讲" (two-way audio not supported).
+
+### Workarounds
+
+- None available in go2rtc 1.9.14. The codec list is hardcoded in the camera firmware and cannot be changed via ISAPI.
+- Monitor the [go2rtc issues](https://github.com/AlexxIT/go2rtc/issues) for multi-codec backchannel support.
+- Wait for Frigate to ship a version with a newer go2rtc that handles this case.
+
+---
+
+## Working Configuration
+
+### go2rtc streams
+
+```yaml
+go2rtc:
+  streams:
+    ptz_dome:
+      - onvif://admin:YOUR_PASSWORD@CAMERA_IP   # video + audio from camera
+      - ffmpeg:ptz_dome#audio=opus              # re-encode audio for WebRTC
+```
+
+**Note on `onvif://` vs direct RTSP URL:** Once the ONVIF user database is correctly populated, `onvif://` works for go2rtc stream ingestion and also gives go2rtc the backchannel SDP (even though go2rtc can't use it yet). Direct RTSP (`rtsp://CAMERA_IP/Streaming/Channels/101`) also works for video+audio but skips ONVIF discovery.
+
+### Frigate camera config
+
+```yaml
+cameras:
+  ptz_dome:
+    ffmpeg:
+      inputs:
+        - path: rtsp://127.0.0.1:8554/ptz_dome    # go2rtc restream
+          input_args: preset-rtsp-restream
+          roles:
+            - detect
+            - record
+    live:
+      streams:
+        Main: ptz_dome
+    onvif:
+      host: CAMERA_IP
+      port: 80
+      user: admin
+      password: YOUR_PASSWORD
+```
+
+The `onvif:` block under the camera config is **separate** from go2rtc streams — this is what Frigate uses for PTZ control commands. It authenticates independently using WSSE, so the ONVIF user permissions described above matter here too.
+
+---
+
+## Feature Status After Correct Configuration
+
+| Feature | Status | Notes |
+|---|---|---|
+| Live video (H.264 2560×1440) | Working | Via go2rtc + WebRTC |
+| Audio from camera (listen) | Working | PCMU decoded by go2rtc |
+| AI object detection | Working | Hailo8L accelerator |
+| Recording | Working | Motion-triggered |
+| PTZ control (pan/tilt/zoom) | Working | Requires ONVIF `administrator` userType |
+| Two-way audio (talk-back) | Not available | go2rtc 1.9.14 multi-codec bug |
+
+---
+
+## Quick Reference: Hikvision ISAPI Endpoints Used
+
+```bash
+# Check ONVIF enabled status
+GET  /ISAPI/System/Network/Integrate
+
+# Toggle ONVIF on/off (also resets lockout)
+PUT  /ISAPI/System/Network/Integrate
+
+# List ONVIF users
+GET  /ISAPI/Security/ONVIF/users
+
+# Create ONVIF user
+POST /ISAPI/Security/ONVIF/users
+
+# Get specific ONVIF user
+GET  /ISAPI/Security/ONVIF/users/1
+
+# Update ONVIF user (use userType, NOT userLevel)
+PUT  /ISAPI/Security/ONVIF/users/1
+
+# Get device info (model, firmware)
+GET  /ISAPI/System/deviceInfo
+
+# Get PTZ capabilities
+GET  /ISAPI/PTZCtrl/channels/1/capabilities
+
+# Soft reboot
+PUT  /ISAPI/System/reboot
+```
+
+All ISAPI endpoints use **HTTP Digest** authentication (`curl --digest`), not ONVIF WSSE.
+
+---
+
+## Summary
+
+Three things you must do before Frigate can use a Hikvision camera with PTZ that aren't in any official documentation:
+
+1. **Create an ONVIF user explicitly** — enabling ONVIF does not populate the ONVIF user DB from system users.
+2. **Use `<userType>` not `<userLevel>`** — wrong field name silently downgrades privileges to read-only.
+3. **Understand the lockout** — 7 failed ONVIF attempts = 30-minute lockout; toggle ONVIF off/on to reset.
+
+Two-way audio remains a known limitation of go2rtc 1.9.14 with Hikvision cameras that advertise multiple codecs in a single SDP backchannel section.
