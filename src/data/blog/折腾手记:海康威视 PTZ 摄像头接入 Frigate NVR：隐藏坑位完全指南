@@ -1,0 +1,287 @@
+---
+title: "海康威视 PTZ 摄像头接入 Frigate NVR：隐藏坑位完全指南"
+description: "记录将海康威视 DS-2DE2A404IWG1-E/W 球机接入 Frigate NVR 时踩过的三个无文档坑：ONVIF 用户数据库独立、userType 字段名导致权限静默降级、账号锁定机制，以及 go2rtc 1.9.14 双向对讲限制的完整分析。"
+author: "Ross Dee & Claude Sonnet"
+tags: ["Frigate", "海康威视", "Hikvision", "ONVIF", "NVR", "PTZ", "智能家居", "监控"]
+pubDatetime: 2026-02-22T20:00:00Z
+slug: "hikvision-ptz-frigate-onvif-pitfalls"
+---
+
+# 海康威视 PTZ 摄像头接入 Frigate NVR：隐藏坑位完全指南
+
+**环境：** Frigate 0.16.4 · go2rtc 1.9.14 · 海康威视 DS-2DE2A404IWG1-E/W（固件 V5.9.1）· Raspberry Pi 5 arm64
+
+---
+
+## 概述
+
+把海康威视 PTZ 摄像头接入 Frigate 理论上应该很简单——摄像头支持 ONVIF，Frigate 支持 ONVIF PTZ，go2rtc 能拉 ONVIF 流。然而实际操作中，三个独立的 bug 或无文档行为，让一次简单的配置变成了数小时的排错。本文记录每一个坑和绕过方法。
+
+---
+
+## 目标
+
+- 接入海康威视 DS-2DE2A404IWG1-E/W PTZ 球机的视频 + 音频
+- 通过 Frigate 内置摇杆 UI 控制云台
+- 通过 Frigate 麦克风按钮实现双向对讲
+- 使用 Hailo8L 加速器进行目标检测
+
+---
+
+## 坑一：海康威视有两套完全独立的用户数据库
+
+这是本文几乎所有认证失败问题的根本原因。
+
+海康威视摄像头维护着**两套互相独立的用户数据库**：
+
+| 数据库 | API 路径 | 用于 |
+|---|---|---|
+| 系统用户（ISAPI） | `/ISAPI/Security/users` | HTTP/HTTPS 访问、RTSP、ISAPI 调用 |
+| ONVIF 用户 | `/ISAPI/Security/ONVIF/users` | 仅用于 ONVIF SOAP 协议 |
+
+当你在海康摄像头上启用 ONVIF（通过 Web 界面或 ISAPI），ONVIF 用户数据库会**完全为空**。你的 `admin` 系统用户**不会**自动成为 ONVIF 用户。任何 ONVIF 客户端——包括 go2rtc 和 Frigate——在尝试认证时都会收到 `400 Bad Request` 或 `NotAuthorized` 错误，即便凭据完全正确。
+
+### 诊断方法
+
+检查摄像头是否有 ONVIF 用户：
+
+```bash
+curl --digest -u "admin:你的密码" \
+  "http://摄像头IP/ISAPI/Security/ONVIF/users" -s
+```
+
+如果返回空列表或没有 `<User>` 元素，就是这个问题。
+
+### 修复：通过 ISAPI 创建 ONVIF 用户
+
+```bash
+curl --digest -u "admin:你的密码" \
+  -X POST "http://摄像头IP/ISAPI/Security/ONVIF/users" \
+  -H "Content-Type: application/xml" \
+  --data-raw '<User version="2.0" xmlns="http://www.hikvision.com/ver20/XMLSchema">
+    <userName>admin</userName>
+    <password>你的密码</password>
+    <userType>administrator</userType>
+  </User>'
+```
+
+**关键：** 字段名是 `<userType>`，**不是** `<userLevel>`。用错字段名，摄像头会无声无息地将用户存储为 `mediaUser`（只读）——这会直接触发坑二。
+
+---
+
+## 坑二：`userType` vs `userLevel`——无提示的权限降级
+
+ONVIF 规范中使用"user level"这个术语，海康的 ISAPI 用的是 `<userType>`。如果你发送 `<userLevel>Administrator</userLevel>`，摄像头会接受请求（HTTP 200），但会将用户以 `userType: mediaUser`——最低权限级别——存储，且不给任何警告。
+
+后果很隐蔽：`mediaUser` 可以读取 ONVIF 数据（GetProfiles、GetNodes 成功），但无法发送任何控制命令。PTZ 的 `ContinuousMove` 返回 `NotAuthorized`。表现为认证成功但云台失控，极难排查。
+
+### 摄像头支持的 `userType` 值（来自能力查询）
+
+```xml
+<userType opt="administrator,operator,mediaUser"/>
+```
+
+PTZ 控制需要 `administrator` 或 `operator`。
+
+### 验证已存储的权限类型
+
+```bash
+curl --digest -u "admin:你的密码" \
+  "http://摄像头IP/ISAPI/Security/ONVIF/users/1" -s
+```
+
+正确返回：
+```xml
+<User version="2.0">
+  <id>1</id>
+  <userName>admin</userName>
+  <userType>administrator</userType>
+</User>
+```
+
+### 修复：用正确字段名更新用户
+
+```bash
+curl --digest -u "admin:你的密码" \
+  -X PUT "http://摄像头IP/ISAPI/Security/ONVIF/users/1" \
+  -H "Content-Type: application/xml" \
+  --data-raw '<User version="2.0" xmlns="http://www.hikvision.com/ver20/XMLSchema">
+    <id>1</id>
+    <userName>admin</userName>
+    <password>你的密码</password>
+    <userType>administrator</userType>
+  </User>'
+```
+
+---
+
+## 坑三：ONVIF 账号锁定
+
+DS-2DE2A404IWG1-E/W 在连续 **7 次 ONVIF 认证失败**后会将 ONVIF 账号锁定 **30 分钟**。在迭代 WSSE 认证或测试 go2rtc 配置时，这个机制会让你吃尽苦头。
+
+被锁定的迹象：
+- 原本工作的 ONVIF 调用现在返回 `NotAuthorized`
+- ISAPI 调用仍然正常（不同的认证系统）
+- go2rtc 日志：`onvif: wrong response 400`
+
+### 不等 30 分钟的重置方法
+
+通过 ISAPI 关闭再开启 ONVIF：
+
+```bash
+# 禁用 ONVIF
+curl --digest -u "admin:你的密码" -X PUT \
+  "http://摄像头IP/ISAPI/System/Network/Integrate" \
+  -H "Content-Type: application/xml" \
+  --data-raw '<Integrate><ONVIFEnable>false</ONVIFEnable></Integrate>'
+
+# 重新启用 ONVIF
+curl --digest -u "admin:你的密码" -X PUT \
+  "http://摄像头IP/ISAPI/System/Network/Integrate" \
+  -H "Content-Type: application/xml" \
+  --data-raw '<Integrate><ONVIFEnable>true</ONVIFEnable></Integrate>'
+```
+
+这会立即清除锁定计数器。
+
+---
+
+## 坑四：双向对讲被 go2rtc 多编解码器限制阻断
+
+海康摄像头的 RTSP 回传通道（即向摄像头发送音频的机制）通过 SDP 声明其能力：
+
+```
+m=audio 0 RTP/AVP 0 102 104
+a=sendonly
+a=rtpmap:0 PCMU/8000/1
+a=rtpmap:102 G726/8000/1
+a=rtpmap:104 mpeg4-generic/16000/1
+```
+
+一个 `sendonly` media section 里三种编解码器。这是合法的 RTSP/SDP 写法。但 go2rtc 1.9.14 无法注册在单个 `sendonly` section 中提供多种编解码器的音轨。日志记录如下：
+
+```
+INF [streams] can't add track error="wrong media: audio, sendonly, PCMU/8000, G726/8000, MPEG4-GENERIC/16000"
+```
+
+回传发送端在内部被部分创建（在流的 `senders` 数组中可以看到，选用了 PCMU 编解码器），但不会暴露在 go2rtc 的 `?microphone` WebRTC 查询结果中。
+
+Frigate UI 通过查询该接口来决定是否显示麦克风按钮：
+
+```python
+# frigate/api/app.py
+requests.get("http://127.0.0.1:1984/api/streams?src={name}&video=all&audio=all&microphone")
+```
+
+前端 JS 判断逻辑：
+```js
+producers.find(p => p.medias.find(m => m.includes("audio, sendonly")))
+```
+
+由于音轨未被返回，Frigate 显示"此视频流不支持双向对讲"。
+
+### 规避方案
+
+- go2rtc 1.9.14 下无可用方案。编解码器列表硬编码在摄像头固件中，无法通过 ISAPI 修改。
+- 关注 [go2rtc issues](https://github.com/AlexxIT/go2rtc/issues) 中多编解码器回传通道的支持进展。
+- 等待 Frigate 集成支持该情况的新版 go2rtc。
+
+---
+
+## 可用配置
+
+### go2rtc 流配置
+
+```yaml
+go2rtc:
+  streams:
+    ptz_dome:
+      - onvif://admin:你的密码@摄像头IP   # 从摄像头拉视频 + 音频
+      - ffmpeg:ptz_dome#audio=opus       # 重新编码音频用于 WebRTC
+```
+
+**关于 `onvif://` vs 直接 RTSP URL 的说明：** 正确创建 ONVIF 用户后，`onvif://` 可以用于 go2rtc 拉流，并且能获取到回传通道的 SDP（即便 go2rtc 目前还不能使用它）。直接 RTSP（`rtsp://摄像头IP/Streaming/Channels/101`）同样可以获取视频+音频，但会跳过 ONVIF 发现流程。
+
+### Frigate 摄像头配置
+
+```yaml
+cameras:
+  ptz_dome:
+    ffmpeg:
+      inputs:
+        - path: rtsp://127.0.0.1:8554/ptz_dome   # go2rtc 转发流
+          input_args: preset-rtsp-restream
+          roles:
+            - detect
+            - record
+    live:
+      streams:
+        主画面: ptz_dome
+    onvif:
+      host: 摄像头IP
+      port: 80
+      user: admin
+      password: 你的密码
+```
+
+摄像头配置下的 `onvif:` 块与 go2rtc 流配置**完全独立**——这是 Frigate 用于发送 PTZ 控制指令的接口，使用 WSSE 独立认证，因此上文描述的 ONVIF 用户权限问题在这里同样适用。
+
+---
+
+## 正确配置后的功能状态
+
+| 功能 | 状态 | 备注 |
+|---|---|---|
+| 实时视频（H.264 2560×1440） | 正常 | 通过 go2rtc + WebRTC |
+| 摄像头音频（监听） | 正常 | PCMU 由 go2rtc 解码 |
+| AI 目标检测 | 正常 | Hailo8L 加速器 |
+| 录像 | 正常 | 移动侦测触发 |
+| PTZ 控制（云台+变倍） | 正常 | 需要 ONVIF `administrator` userType |
+| 双向对讲 | 不可用 | go2rtc 1.9.14 多编解码器 bug |
+
+---
+
+## 快速参考：用到的 ISAPI 接口
+
+```bash
+# 查询 ONVIF 启用状态
+GET  /ISAPI/System/Network/Integrate
+
+# 开关 ONVIF（同时重置锁定）
+PUT  /ISAPI/System/Network/Integrate
+
+# 列出 ONVIF 用户
+GET  /ISAPI/Security/ONVIF/users
+
+# 创建 ONVIF 用户
+POST /ISAPI/Security/ONVIF/users
+
+# 查询指定 ONVIF 用户
+GET  /ISAPI/Security/ONVIF/users/1
+
+# 更新 ONVIF 用户（用 userType，不是 userLevel）
+PUT  /ISAPI/Security/ONVIF/users/1
+
+# 获取设备信息（型号、固件）
+GET  /ISAPI/System/deviceInfo
+
+# 查询 PTZ 能力
+GET  /ISAPI/PTZCtrl/channels/1/capabilities
+
+# 软重启
+PUT  /ISAPI/System/reboot
+```
+
+所有 ISAPI 接口均使用 **HTTP Digest** 认证（`curl --digest`），而不是 ONVIF WSSE。
+
+---
+
+## 总结
+
+在所有官方文档中找不到的三件必做之事，才能让 Frigate 正常使用带 PTZ 的海康摄像头：
+
+1. **显式创建 ONVIF 用户** —— 启用 ONVIF 不会自动将系统用户同步到 ONVIF 用户数据库。
+2. **使用 `<userType>` 而非 `<userLevel>`** —— 字段名错误会无声地将权限降级为只读。
+3. **了解锁定机制** —— 7 次 ONVIF 认证失败 = 30 分钟锁定；关闭再开启 ONVIF 即可重置。
+
+双向对讲目前是 go2rtc 1.9.14 在处理海康摄像头单 SDP 节中声明多编解码器的回传通道时的已知限制。
